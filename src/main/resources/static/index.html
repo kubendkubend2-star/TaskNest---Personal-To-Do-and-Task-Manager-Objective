@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskNest – Personal To-Do & Task Manager</title>
+  <meta name="description" content="A modern, high-performance personal to-do and task management application designed for students and professionals.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪹</text></svg>">
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <a href="#" class="brand-section" id="nav-brand-link">
+      <div class="brand-logo">🪹</div>
+      <div class="brand-title">
+        <span class="brand-name">TaskNest</span>
+        <span class="brand-tagline">To-Do & Task Manager</span>
+      </div>
+    </a>
+
+    <div class="nav-actions">
+      <!-- Quick API Docs / Swagger links -->
+      <div class="nav-links">
+        <a href="/swagger-ui/index.html" target="_blank" class="nav-link-btn" title="Open Swagger Documentation">
+          <span>⚡ Swagger UI</span>
+        </a>
+        <a href="/v3/api-docs" target="_blank" class="nav-link-btn" title="View OpenAPI Specification">
+          <span>📄 API Docs</span>
+        </a>
+      </div>
+
+      <!-- Workspace Data Tools (Manual Mode & Demo Data) -->
+      <div class="workspace-data-tools">
+        <button class="btn-tool danger" id="btn-clear-user-data" title="Wipe tasks and lists to start completely fresh for manual creation">
+          <span>🧹 Start Fresh</span>
+        </button>
+        <button class="btn-tool" id="btn-reload-sample-data" title="Reload demo assignments and club tasks">
+          <span>📦 Demo Data</span>
+        </button>
+      </div>
+
+      <!-- User Switcher & Create User -->
+      <div class="user-selector-wrapper">
+        <div class="user-avatar" id="current-user-avatar">U</div>
+        <select id="user-select" class="user-select" aria-label="Select User">
+          <!-- Populated dynamically via JS -->
+        </select>
+        <button class="btn-icon-round" id="btn-open-create-user-modal" title="Add New User">+</button>
+      </div>
+
+      <!-- Add Task CTA -->
+      <button class="btn btn-primary" id="btn-open-create-task-modal">
+        <span>+ Add Task</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Metrics / KPI Section -->
+  <section class="metrics-section" aria-label="Dashboard Metrics">
+    <div class="metrics-grid">
+      <div class="metric-card" id="metric-card-lists">
+        <div class="metric-icon lists">🗂️</div>
+        <div class="metric-info">
+          <span class="metric-value" id="stat-total-lists">0</span>
+          <span class="metric-label">Task Lists</span>
+        </div>
+      </div>
+
+      <div class="metric-card" id="metric-card-total">
+        <div class="metric-icon total">📋</div>
+        <div class="metric-info">
+          <span class="metric-value" id="stat-total-tasks">0</span>
+          <span class="metric-label">Total Tasks</span>
+        </div>
+      </div>
+
+      <div class="metric-card" id="metric-card-completed">
+        <div class="metric-icon completed">✅</div>
+        <div class="metric-info">
+          <span class="metric-value" id="stat-completed-tasks">0</span>
+          <span class="metric-label">Completed</span>
+        </div>
+      </div>
+
+      <div class="metric-card" id="metric-card-pending">
+        <div class="metric-icon pending">⏳</div>
+        <div class="metric-info">
+          <span class="metric-value" id="stat-incomplete-tasks">0</span>
+          <span class="metric-label">Pending</span>
+        </div>
+      </div>
+
+      <div class="metric-card" id="metric-card-overdue">
+        <div class="metric-icon overdue">⚠️</div>
+        <div class="metric-info">
+          <span class="metric-value" id="stat-overdue-tasks">0</span>
+          <span class="metric-label">Overdue Tasks</span>
+        </div>
+      </div>
+
+      <div class="metric-card" id="metric-card-today">
+        <div class="metric-icon today">☀️</div>
+        <div class="metric-info">
+          <span class="metric-value" id="stat-today-tasks">0</span>
+          <span class="metric-label">Due Today</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace -->
+  <main class="main-workspace">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <!-- Smart Navigation Views -->
+      <div class="sidebar-card">
+        <div class="sidebar-title-row">
+          <span class="sidebar-title">Views</span>
+        </div>
+        <ul class="sidebar-menu">
+          <li class="menu-item active" data-view="all" id="view-all-tasks">
+            <div class="menu-item-left">
+              <span class="menu-item-icon">📌</span>
+              <span>All Tasks</span>
+            </div>
+            <span class="badge-count" id="sidebar-count-all">0</span>
+          </li>
+          <li class="menu-item" data-view="today" id="view-today-tasks">
+            <div class="menu-item-left">
+              <span class="menu-item-icon">☀️</span>
+              <span>Due Today</span>
+            </div>
+            <span class="badge-count" id="sidebar-count-today">0</span>
+          </li>
+          <li class="menu-item" data-view="overdue" id="view-overdue-tasks">
+            <div class="menu-item-left">
+              <span class="menu-item-icon">⚠️</span>
+              <span>Overdue</span>
+            </div>
+            <span class="badge-count badge-overdue" id="sidebar-count-overdue">0</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Custom Task Lists -->
+      <div class="sidebar-card">
+        <div class="sidebar-title-row">
+          <span class="sidebar-title">My Lists</span>
+          <button class="btn btn-secondary btn-sm" id="btn-open-create-list-modal" title="Create New List">+ New List</button>
+        </div>
+        <ul class="sidebar-menu" id="custom-task-lists">
+          <!-- Populated dynamically via JS -->
+        </ul>
+        <div class="sidebar-quick-list-box">
+          <input type="text" id="sidebar-quick-list-input" class="sidebar-quick-list-input" placeholder="+ Quick list name & Enter..." />
+          <button class="sidebar-quick-list-btn" id="btn-sidebar-quick-add-list" title="Add List">+</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <section class="content-area">
+      <!-- Active View Banner -->
+      <div class="view-header">
+        <div class="view-info">
+          <h1 id="view-title">All Tasks</h1>
+          <p id="view-description">Showing all tasks across your organized lists.</p>
+        </div>
+        <div class="view-header-actions" id="view-header-actions">
+          <!-- Dynamic actions for custom lists (Edit, Delete) -->
+        </div>
+      </div>
+
+      <!-- Overdue Warning Banner (shown only on Overdue view) -->
+      <div class="overdue-alert-banner" id="overdue-banner" style="display: none;">
+        <span>🔔</span>
+        <span><strong>Business Rule Active:</strong> Overdue tasks past due date continue to be flagged here until marked complete.</span>
+      </div>
+
+      <!-- Manual Task Creation Studio Card -->
+      <div class="manual-creation-card" id="manual-creation-card">
+        <div class="manual-card-header">
+          <div class="manual-card-title">
+            <span>✍️ Manual Task Creator</span>
+            <span class="manual-card-badge">Instant Add</span>
+          </div>
+          <button type="button" class="btn-toggle-notes" id="btn-toggle-manual-notes">+ Add Description</button>
+        </div>
+
+        <div class="manual-input-row">
+          <input type="text" id="manual-task-title" class="manual-title-input" placeholder="What needs to be done? (Type title & press Enter to create...)" maxlength="200" autocomplete="off" />
+          <button class="btn btn-primary" id="btn-manual-add-task">
+            <span>➕ Add Task</span>
+          </button>
+        </div>
+
+        <textarea id="manual-task-desc" class="manual-desc-input" placeholder="Enter optional notes, assignment guidelines, or details..."></textarea>
+
+        <div class="manual-controls-row">
+          <div class="manual-controls-left">
+            <select id="manual-task-list" class="manual-list-select" aria-label="Target List">
+              <!-- Populated dynamically via JS -->
+            </select>
+
+            <div class="date-chips-row">
+              <button type="button" class="date-chip active" data-offset="0">Today</button>
+              <button type="button" class="date-chip" data-offset="1">Tomorrow</button>
+              <button type="button" class="date-chip" data-offset="3">+3 Days</button>
+              <button type="button" class="date-chip" data-offset="7">Next Week</button>
+            </div>
+
+            <input type="date" id="manual-task-date" class="manual-date-picker" title="Custom Due Date" />
+
+            <div class="priority-pill-selector">
+              <button type="button" class="priority-pill-btn low" data-priority="LOW">LOW</button>
+              <button type="button" class="priority-pill-btn medium active" data-priority="MEDIUM">MEDIUM</button>
+              <button type="button" class="priority-pill-btn high" data-priority="HIGH">HIGH</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter & Search Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="filter-search" class="search-input" placeholder="Search tasks by title..." autocomplete="off">
+          </div>
+
+          <select id="filter-priority" class="filter-select" aria-label="Filter by Priority">
+            <option value="">Priority: All</option>
+            <option value="HIGH">High Priority</option>
+            <option value="MEDIUM">Medium Priority</option>
+            <option value="LOW">Low Priority</option>
+          </select>
+
+          <select id="filter-status" class="filter-select" aria-label="Filter by Status">
+            <option value="">Status: All</option>
+            <option value="false">Incomplete (Pending)</option>
+            <option value="true">Completed</option>
+          </select>
+
+          <input type="date" id="filter-duedate" class="date-input" title="Filter by Due Date">
+        </div>
+
+        <div class="toolbar-right">
+          <button class="btn btn-secondary btn-sm" id="btn-clear-filters" title="Reset all active filters">Reset Filters</button>
+        </div>
+      </div>
+
+      <!-- Tasks List Container -->
+      <div class="tasks-container" id="tasks-list">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ===================================================================
+     MODALS
+     =================================================================== -->
+
+<!-- 1. Create Task Modal -->
+<div class="modal-overlay" id="modal-create-task">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Create New Task</h2>
+      <button class="modal-close" data-close-modal="modal-create-task">&times;</button>
+    </div>
+    <form id="form-create-task">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="task-target-list">Target Task List *</label>
+          <select id="task-target-list" class="form-select" required>
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-title">Task Title *</label>
+          <input type="text" id="task-title" class="form-input" placeholder="e.g. Complete OS lab report" required maxlength="200">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-desc">Description (Optional)</label>
+          <textarea id="task-desc" class="form-textarea" placeholder="Add additional context, links, or instructions..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-duedate">Due Date *</label>
+          <input type="date" id="task-duedate" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Priority *</label>
+          <div class="priority-selector">
+            <div class="priority-option">
+              <input type="radio" name="create-priority" id="p-low" value="LOW">
+              <label class="priority-label" for="p-low">LOW</label>
+            </div>
+            <div class="priority-option">
+              <input type="radio" name="create-priority" id="p-medium" value="MEDIUM" checked>
+              <label class="priority-label" for="p-medium">MEDIUM</label>
+            </div>
+            <div class="priority-option">
+              <input type="radio" name="create-priority" id="p-high" value="HIGH">
+              <label class="priority-label" for="p-high">HIGH</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-create-task">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 2. Edit Task Modal -->
+<div class="modal-overlay" id="modal-edit-task">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Task</h2>
+      <button class="modal-close" data-close-modal="modal-edit-task">&times;</button>
+    </div>
+    <form id="form-edit-task">
+      <input type="hidden" id="edit-task-id">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="edit-task-title">Task Title *</label>
+          <input type="text" id="edit-task-title" class="form-input" required maxlength="200">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-task-desc">Description</label>
+          <textarea id="edit-task-desc" class="form-textarea"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-task-duedate">Due Date *</label>
+          <input type="date" id="edit-task-duedate" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Priority *</label>
+          <div class="priority-selector">
+            <div class="priority-option">
+              <input type="radio" name="edit-priority" id="edit-p-low" value="LOW">
+              <label class="priority-label" for="edit-p-low">LOW</label>
+            </div>
+            <div class="priority-option">
+              <input type="radio" name="edit-priority" id="edit-p-medium" value="MEDIUM">
+              <label class="priority-label" for="edit-p-medium">MEDIUM</label>
+            </div>
+            <div class="priority-option">
+              <input type="radio" name="edit-priority" id="edit-p-high" value="HIGH">
+              <label class="priority-label" for="edit-p-high">HIGH</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-edit-task">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 3. Move Task Modal -->
+<div class="modal-overlay" id="modal-move-task">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Move Task to Another List</h2>
+      <button class="modal-close" data-close-modal="modal-move-task">&times;</button>
+    </div>
+    <form id="form-move-task">
+      <input type="hidden" id="move-task-id">
+      <div class="modal-body">
+        <p class="form-label" id="move-task-title-display">Moving task...</p>
+        <div class="form-group">
+          <label class="form-label" for="move-target-list">Select Destination List *</label>
+          <select id="move-target-list" class="form-select" required>
+            <!-- Populated via JS with same-user lists -->
+          </select>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-faint);">
+          * Tasks can only be moved between lists belonging to the current user.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-move-task">Cancel</button>
+        <button type="submit" class="btn btn-primary">Move Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 4. Create Task List Modal -->
+<div class="modal-overlay" id="modal-create-list">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Create Task List</h2>
+      <button class="modal-close" data-close-modal="modal-create-list">&times;</button>
+    </div>
+    <form id="form-create-list">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="list-name">List Name *</label>
+          <input type="text" id="list-name" class="form-input" placeholder="e.g. Capstone Project" required maxlength="150">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="list-desc">Description (Optional)</label>
+          <textarea id="list-desc" class="form-textarea" placeholder="Describe the goal of this list..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-create-list">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create List</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 5. Edit Task List Modal -->
+<div class="modal-overlay" id="modal-edit-list">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Task List</h2>
+      <button class="modal-close" data-close-modal="modal-edit-list">&times;</button>
+    </div>
+    <form id="form-edit-list">
+      <input type="hidden" id="edit-list-id">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="edit-list-name">List Name *</label>
+          <input type="text" id="edit-list-name" class="form-input" required maxlength="150">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-list-desc">Description</label>
+          <textarea id="edit-list-desc" class="form-textarea"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-edit-list">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 6. Create User Modal -->
+<div class="modal-overlay" id="modal-create-user">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Create New User</h2>
+      <button class="modal-close" data-close-modal="modal-create-user">&times;</button>
+    </div>
+    <form id="form-create-user">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="user-name">Full Name *</label>
+          <input type="text" id="user-name" class="form-input" placeholder="e.g. Jordan Smith" required minlength="2" maxlength="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="user-email">Email Address *</label>
+          <input type="email" id="user-email" class="form-input" placeholder="e.g. jordan.smith@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="user-password">Password *</label>
+          <input type="password" id="user-password" class="form-input" placeholder="At least 6 characters" required minlength="6">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-create-user">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create User</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast Notifications Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Main Application Logic -->
+<script src="js/app.js"></script>
+</body>
+</html>

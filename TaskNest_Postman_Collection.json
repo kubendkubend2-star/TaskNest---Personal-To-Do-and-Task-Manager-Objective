@@ -1,0 +1,477 @@
+{
+  "info": {
+    "name": "TaskNest - Personal To-Do and Task Manager REST API",
+    "description": "Postman Collection for testing all TaskNest endpoints, including User, TaskList, Task CRUD, today/overdue queries, filters, status toggles, task movement, and dashboard analytics.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "listId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "targetListId",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "taskId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. User Management",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sarah Connor\",\n  \"email\": \"sarah.connor@tasknest.edu\",\n  \"password\": \"SecurePass999!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alex Mercer Updated\",\n  \"email\": \"alex.mercer@tasknest.edu\",\n  \"password\": \"newSecretPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/99",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "99"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Task Lists",
+      "item": [
+        {
+          "name": "Create Task List for User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"AI & Machine Learning Coursework\",\n  \"description\": \"Neural network coding assignments and Kaggle competitions\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/lists",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "lists"]
+            }
+          }
+        },
+        {
+          "name": "Get All Lists for User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/lists",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "lists"]
+            }
+          }
+        },
+        {
+          "name": "Get Specific Task List by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/lists/{{listId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lists", "{{listId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Task List",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Advanced Academic Assignments\",\n  \"description\": \"Updated syllabus coursework and capstone milestones\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lists/{{listId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lists", "{{listId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Task List",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/lists/{{listId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lists", "{{listId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Tasks CRUD",
+      "item": [
+        {
+          "name": "Create Task in List",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Implement ResNet on PyTorch\",\n  \"description\": \"Train 50 epochs on CIFAR-10 and generate confusion matrix\",\n  \"dueDate\": \"2026-10-05\",\n  \"priority\": \"HIGH\",\n  \"completed\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lists/{{listId}}/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lists", "{{listId}}", "tasks"]
+            }
+          }
+        },
+        {
+          "name": "Get All Tasks in List",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/lists/{{listId}}/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lists", "{{listId}}", "tasks"]
+            }
+          }
+        },
+        {
+          "name": "Get Task by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "{{taskId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Submit CS501 Operating Systems Lab 2 (Revised)\",\n  \"description\": \"Include bonus benchmarking graphs in PDF write-up\",\n  \"dueDate\": \"2026-09-30\",\n  \"priority\": \"HIGH\",\n  \"completed\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "{{taskId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "{{taskId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Status & Movement",
+      "item": [
+        {
+          "name": "Mark Task Complete",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/{{taskId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "{{taskId}}", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Mark Task Incomplete",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/{{taskId}}/incomplete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "{{taskId}}", "incomplete"]
+            }
+          }
+        },
+        {
+          "name": "Move Task to Another List (Same User)",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/{{taskId}}/move/{{targetListId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "{{taskId}}", "move", "{{targetListId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Views & Filters",
+      "item": [
+        {
+          "name": "Get Today's Tasks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/tasks/today",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "tasks", "today"]
+            }
+          }
+        },
+        {
+          "name": "Get Overdue Tasks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/tasks/overdue",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "tasks", "overdue"]
+            }
+          }
+        },
+        {
+          "name": "Filter Tasks - Priority HIGH",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/tasks?priority=HIGH",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "tasks"],
+              "query": [
+                {
+                  "key": "priority",
+                  "value": "HIGH"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter Tasks - Incomplete Only",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/tasks?completed=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "tasks"],
+              "query": [
+                {
+                  "key": "completed",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter Tasks - Due Date",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/tasks?dueDate=2026-09-28",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "tasks"],
+              "query": [
+                {
+                  "key": "dueDate",
+                  "value": "2026-09-28"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Dashboard Analytics",
+      "item": [
+        {
+          "name": "Get User Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "dashboard"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Error Validation Scenarios",
+      "item": [
+        {
+          "name": "Invalid Priority (Returns 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Task with invalid priority\",\n  \"dueDate\": \"2026-10-01\",\n  \"priority\": \"SUPER_HIGH\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lists/{{listId}}/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lists", "{{listId}}", "tasks"]
+            }
+          }
+        },
+        {
+          "name": "Move Task to Other User List (Returns 400)",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/{{taskId}}/move/4",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "{{taskId}}", "move", "4"]
+            }
+          }
+        },
+        {
+          "name": "Duplicate User Email (Returns 409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate User\",\n  \"email\": \"alex.mercer@tasknest.edu\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Non-existent Task (Returns 404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "99999"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
