@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskNest – Sign In & User Access</title>
+  <meta name="description" content="Sign in or register for TaskNest, your modern personal to-do and task management suite.">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core and Auth Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪹</text></svg>">
+</head>
+<body class="auth-page">
+
+  <!-- Glowing Ambient Ambient Orbs -->
+  <div class="auth-ambient-orb orb-1"></div>
+  <div class="auth-ambient-orb orb-2"></div>
+  <div class="auth-ambient-orb orb-3"></div>
+
+  <div class="auth-wrapper">
+
+    <!-- Active Session Banner (visible when a user is already signed in) -->
+    <div class="active-session-banner" id="active-session-banner" style="display: none;">
+      <div class="active-session-info">
+        <span>👤</span>
+        <div>
+          <span>Signed in as <strong id="active-session-name">User</strong></span>
+        </div>
+      </div>
+      <div class="active-session-actions">
+        <a href="index.html" class="btn btn-primary btn-sm" id="btn-session-continue">Go to Tasks →</a>
+        <button type="button" class="btn-tool danger" id="btn-session-signout">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Brand Header -->
+    <header class="auth-brand-header">
+      <a href="index.html" class="auth-logo-badge" title="TaskNest Home">
+        <span>🪹</span>
+      </a>
+      <h1 class="auth-title">TaskNest</h1>
+      <p class="auth-subtitle">Sign in to access your tasks and workspace</p>
+    </header>
+
+    <!-- Main Authentication Card -->
+    <main class="auth-card">
+      <!-- Mode Tabs -->
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab-btn active" id="tab-btn-signin" role="tab" aria-selected="true" aria-controls="panel-signin">
+          <span>🔐</span> Sign In
+        </button>
+        <button type="button" class="auth-tab-btn" id="tab-btn-signup" role="tab" aria-selected="false" aria-controls="panel-signup">
+          <span>✨</span> Create Account
+        </button>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- TAB 1: SIGN IN FORM                        -->
+      <!-- ========================================== -->
+      <section id="panel-signin" role="tabpanel" aria-labelledby="tab-btn-signin">
+        <!-- Alert Box -->
+        <div class="auth-alert" id="signin-alert" role="alert">
+          <span class="alert-icon">⚠️</span>
+          <span class="alert-text" id="signin-alert-text"></span>
+        </div>
+
+        <form class="auth-form" id="form-signin" novalidate>
+          <div class="form-field-group">
+            <label class="form-field-label" for="signin-email">
+              Email Address <span class="req">*</span>
+            </label>
+            <div class="form-input-wrapper">
+              <input
+                type="email"
+                id="signin-email"
+                class="auth-input"
+                placeholder="name@university.edu"
+                required
+                autocomplete="email"
+              />
+              <span class="form-input-icon">✉️</span>
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-field-label" for="signin-password">
+              Password <span class="req">*</span>
+            </label>
+            <div class="form-input-wrapper">
+              <input
+                type="password"
+                id="signin-password"
+                class="auth-input"
+                placeholder="Enter your password"
+                required
+                autocomplete="current-password"
+              />
+              <span class="form-input-icon">🔒</span>
+              <button type="button" class="btn-password-toggle" id="btn-toggle-signin-password" aria-label="Toggle password visibility">
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <div class="form-options-row">
+            <label class="custom-checkbox-label" for="signin-remember">
+              <input type="checkbox" id="signin-remember" checked />
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="forgot-password-link" id="link-forgot-password">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-auth-submit" id="btn-submit-signin">
+            <span class="btn-text">Sign In to TaskNest</span>
+            <span class="btn-icon">→</span>
+          </button>
+        </form>
+
+        <!-- 1-Click Demo Logins -->
+        <div class="demo-accounts-section">
+          <div class="demo-section-title">
+            <span>Instant Demo Accounts</span>
+          </div>
+          <div class="demo-accounts-grid">
+            <button type="button" class="demo-account-card" id="btn-demo-alex" title="Click to log in as Alex Mercer">
+              <div class="demo-account-top">
+                <div class="demo-avatar">A</div>
+                <span class="demo-tag">Student</span>
+              </div>
+              <div class="demo-name">Alex Mercer</div>
+              <div class="demo-hint">alex.mercer@tasknest.edu</div>
+            </button>
+
+            <button type="button" class="demo-account-card" id="btn-demo-maya" title="Click to log in as Maya Lin">
+              <div class="demo-account-top">
+                <div class="demo-avatar" style="background: linear-gradient(135deg, #a855f7, #ec4899);">M</div>
+                <span class="demo-tag">Researcher</span>
+              </div>
+              <div class="demo-name">Maya Lin</div>
+              <div class="demo-hint">maya.lin@tasknest.edu</div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 2: CREATE ACCOUNT FORM                 -->
+      <!-- ========================================== -->
+      <section id="panel-signup" role="tabpanel" aria-labelledby="tab-btn-signup" style="display: none;">
+        <!-- Alert Box -->
+        <div class="auth-alert" id="signup-alert" role="alert">
+          <span class="alert-icon">⚠️</span>
+          <span class="alert-text" id="signup-alert-text"></span>
+        </div>
+
+        <form class="auth-form" id="form-signup" novalidate>
+          <div class="form-field-group">
+            <label class="form-field-label" for="signup-name">
+              Full Name <span class="req">*</span>
+            </label>
+            <div class="form-input-wrapper">
+              <input
+                type="text"
+                id="signup-name"
+                class="auth-input"
+                placeholder="e.g. Jordan Smith"
+                required
+                minlength="2"
+                maxlength="100"
+                autocomplete="name"
+              />
+              <span class="form-input-icon">👤</span>
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-field-label" for="signup-email">
+              Email Address <span class="req">*</span>
+            </label>
+            <div class="form-input-wrapper">
+              <input
+                type="email"
+                id="signup-email"
+                class="auth-input"
+                placeholder="e.g. jordan.smith@example.com"
+                required
+                autocomplete="email"
+              />
+              <span class="form-input-icon">✉️</span>
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-field-label" for="signup-password">
+              Password <span class="req">*</span>
+            </label>
+            <div class="form-input-wrapper">
+              <input
+                type="password"
+                id="signup-password"
+                class="auth-input"
+                placeholder="At least 6 characters"
+                required
+                minlength="6"
+                autocomplete="new-password"
+              />
+              <span class="form-input-icon">🔒</span>
+              <button type="button" class="btn-password-toggle" id="btn-toggle-signup-password" aria-label="Toggle password visibility">
+                👁️
+              </button>
+            </div>
+            <!-- Password strength indicator -->
+            <div class="password-strength-container" id="strength-container" style="display: none;">
+              <div class="password-strength-bars">
+                <div class="strength-bar" id="strength-bar-1"></div>
+                <div class="strength-bar" id="strength-bar-2"></div>
+                <div class="strength-bar" id="strength-bar-3"></div>
+              </div>
+              <div class="strength-label">
+                <span>Strength:</span>
+                <span id="strength-text">Too short</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-field-label" for="signup-confirm-password">
+              Confirm Password <span class="req">*</span>
+            </label>
+            <div class="form-input-wrapper">
+              <input
+                type="password"
+                id="signup-confirm-password"
+                class="auth-input"
+                placeholder="Re-enter your password"
+                required
+                minlength="6"
+                autocomplete="new-password"
+              />
+              <span class="form-input-icon">🔒</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-auth-submit" id="btn-submit-signup">
+            <span class="btn-text">Create Account & Get Started</span>
+            <span class="btn-icon">✨</span>
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <!-- Key Product Features Strip -->
+    <div class="auth-features-bar">
+      <div class="auth-feature-item">
+        <span>⚡</span>
+        <span>Dynamic Metrics</span>
+      </div>
+      <div class="auth-feature-item">
+        <span>🎯</span>
+        <span>Priority Sorting</span>
+      </div>
+      <div class="auth-feature-item">
+        <span>🔒</span>
+        <span>Isolated Workspaces</span>
+      </div>
+    </div>
+
+    <!-- Developer & API Links -->
+    <footer class="auth-dev-links">
+      <a href="/swagger-ui/index.html" target="_blank" class="auth-dev-link" title="Open Swagger UI">
+        <span>⚡ Swagger UI</span>
+      </a>
+      <span>•</span>
+      <a href="/v3/api-docs" target="_blank" class="auth-dev-link" title="Open OpenAPI 3.0 specification">
+        <span>📄 OpenAPI Spec</span>
+      </a>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Authentication Script -->
+  <script src="js/auth.js"></script>
+</body>
+</html>

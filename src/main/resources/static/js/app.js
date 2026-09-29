@@ -121,13 +121,17 @@ async function loadUsers() {
       selectEl.appendChild(opt);
     });
 
-    // Check stored user or default to first
+    // Check stored user or redirect to login
     const savedUserId = localStorage.getItem('tasknest_active_user_id');
     const matched = state.users.find(u => u.id == savedUserId);
-    const initialUser = matched || state.users[0];
 
-    selectEl.value = initialUser.id;
-    await switchUser(initialUser.id);
+    if (!savedUserId || !matched) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    selectEl.value = matched.id;
+    await switchUser(matched.id);
   } catch (err) {
     showToast(`Failed to load users: ${err.message}`, 'error');
   }
@@ -139,6 +143,7 @@ async function switchUser(userId) {
 
   state.currentUser = user;
   localStorage.setItem('tasknest_active_user_id', user.id);
+  localStorage.setItem('tasknest_active_user', JSON.stringify(user));
 
   // Update Avatar initials
   const initials = user.name ? user.name.charAt(0).toUpperCase() : 'U';
@@ -841,6 +846,16 @@ function initEventListeners() {
   document.getElementById('user-select').addEventListener('change', (e) => {
     switchUser(e.target.value);
   });
+
+  // Logout button
+  const btnLogout = document.getElementById('btn-logout');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      localStorage.removeItem('tasknest_active_user');
+      localStorage.removeItem('tasknest_active_user_id');
+      window.location.href = 'login.html?logout=true';
+    });
+  }
 
   // Smart View Clicks
   document.getElementById('view-all-tasks').addEventListener('click', () => selectView('all'));

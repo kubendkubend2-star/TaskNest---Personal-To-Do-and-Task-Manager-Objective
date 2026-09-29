@@ -1,10 +1,12 @@
 package com.tasknest.service;
 
+import com.tasknest.dto.LoginRequestDto;
 import com.tasknest.dto.UserRequestDto;
 import com.tasknest.dto.UserResponseDto;
 import com.tasknest.entity.User;
 import com.tasknest.exception.DuplicateEmailException;
 import com.tasknest.exception.ResourceNotFoundException;
+import com.tasknest.exception.UnauthorizedException;
 import com.tasknest.entity.Priority;
 import com.tasknest.entity.Task;
 import com.tasknest.entity.TaskList;
@@ -27,6 +29,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final TaskListRepository taskListRepository;
     private final TaskRepository taskRepository;
+
+    @Transactional(readOnly = true)
+    public UserResponseDto authenticate(LoginRequestDto request) {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new UnauthorizedException("Invalid email or password. Please verify your credentials."));
+
+        if (!user.getPassword().equals(request.getPassword())) {
+            throw new UnauthorizedException("Invalid email or password. Please verify your credentials.");
+        }
+
+        return mapToResponseDto(user);
+    }
 
     public UserResponseDto createUser(UserRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {

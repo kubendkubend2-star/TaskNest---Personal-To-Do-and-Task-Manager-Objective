@@ -1,6 +1,7 @@
 package com.tasknest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tasknest.dto.LoginRequestDto;
 import com.tasknest.dto.TaskListRequestDto;
 import com.tasknest.dto.TaskRequestDto;
 import com.tasknest.dto.UserRequestDto;
@@ -340,5 +341,63 @@ public class TaskNestApplicationTests {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.message").value(containsString("already registered")));
+    }
+
+    // 12. Authentication Endpoints Test (Login & Register)
+    @Test
+    @DisplayName("12. Authentication Endpoints - Login & Register")
+    void test12_AuthEndpoints() throws Exception {
+        // Register new user via auth endpoint
+        UserRequestDto registerRequest = UserRequestDto.builder()
+                .name("Alice Wonderland")
+                .email("alice@wonderland.com")
+                .password("secretAlice99")
+                .build();
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registerRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.email").value("alice@wonderland.com"))
+                .andExpect(jsonPath("$.name").value("Alice Wonderland"));
+
+        // Login with valid credentials
+        LoginRequestDto validLogin = LoginRequestDto.builder()
+                .email("alice@wonderland.com")
+                .password("secretAlice99")
+                .build();
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validLogin)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("alice@wonderland.com"))
+                .andExpect(jsonPath("$.name").value("Alice Wonderland"));
+
+        // Login with wrong password -> 401 Unauthorized
+        LoginRequestDto wrongPass = LoginRequestDto.builder()
+                .email("alice@wonderland.com")
+                .password("wrongpassword")
+                .build();
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(wrongPass)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.message").value(containsString("Invalid email or password")));
+
+        // Login with unknown email -> 401 Unauthorized
+        LoginRequestDto unknownUser = LoginRequestDto.builder()
+                .email("unknown@tasknest.com")
+                .password("somePassword123")
+                .build();
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(unknownUser)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401));
     }
 }
